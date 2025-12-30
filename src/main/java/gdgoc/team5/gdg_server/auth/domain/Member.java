@@ -31,9 +31,6 @@ public class Member {
 	private String username;
 
 	@Column(nullable = false)
-	private String password;
-
-	@Column(nullable = false)
 	private String email;
 
 	@Column(nullable = false)
@@ -60,7 +57,6 @@ public class Member {
 	// 회원가입
 	public Member(SignUpRequestDto dto) {
 		this.username = dto.username();
-		this.password = dto.password();
 		this.email = dto.email();
 		this.realName = dto.realName();
 		this.memberRole = dto.memberRole();
@@ -74,7 +70,6 @@ public class Member {
 	public static Member testSignUp(TestLoginRequestDto dto) {
 		return Member.builder()
 			.username(dto.username())
-			.password("1234")
 			.realName(dto.username())
 			.memberRole(MemberRole.MEMBER)
 			.memberType(MemberType.TEST)
