@@ -28,7 +28,7 @@ public class SwaggerConfig {
 					.title("API Documentation")
 					.version("1.0")
 					.description("API documentation with JWT authentication"))
-			.servers(getServers())
+			// .servers(getServers())
 			.components(
 				new Components()
 					.addSecuritySchemes(
