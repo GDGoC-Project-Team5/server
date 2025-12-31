@@ -20,4 +20,9 @@ public class MemberRepositoryImpl implements MemberRepository {
 	public Member save(Member member) {
 		return memberJpaRepository.save(member);
 	}
+
+	@Override
+	public Optional<Member> findById(Long memberId) {
+		return memberJpaRepository.findById(memberId);
+	}
 }

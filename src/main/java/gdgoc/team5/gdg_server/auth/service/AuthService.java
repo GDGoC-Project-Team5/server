@@ -10,8 +10,8 @@ import gdgoc.team5.gdg_server.auth.controller.request.SocialLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.response.LoginResponseDto;
 import gdgoc.team5.gdg_server.auth.domain.Member;
-import gdgoc.team5.gdg_server.auth.jwt.JwtTokenProvider;
 import gdgoc.team5.gdg_server.auth.repository.MemberRepository;
+import gdgoc.team5.gdg_server.common.controller.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +29,6 @@ public class AuthService {
 		Member newMember = member.orElseGet(() -> memberRepository.save(Member.testSignUp(dto)));
 
 		setJwtTokensToHeader(newMember, response);
-
 		return LoginResponseDto.fromDomain(newMember);
 	}
 
@@ -45,6 +44,7 @@ public class AuthService {
 	public LoginResponseDto signup(SignUpRequestDto dto, HttpServletResponse response) {
 		Member member = new Member(dto);
 		memberRepository.save(member);
+
 		setJwtTokensToHeader(member, response);
 		return LoginResponseDto.fromDomain(member);
 	}

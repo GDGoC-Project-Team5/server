@@ -1,4 +1,4 @@
-package gdgoc.team5.gdg_server.auth.jwt;
+package gdgoc.team5.gdg_server.common.controller.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gdgoc.team5.gdg_server.auth.domain.Member;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,26 @@ public class JwtTokenProvider {
 			.expiration(expiryDate)
 			.signWith(getSecretKey())
 			.compact();
+	}
+
+	public boolean validateToken(String token) {
+		try {
+			Jwts.parser()
+				.verifyWith(getSecretKey())
+				.build()
+				.parseSignedClaims(token);
+			return true;
+		} catch (JwtException | IllegalArgumentException e) {
+			return false;
+		}
+	}
+
+	public Long getMemberIdFromToken(String token) {
+		Claims claims = Jwts.parser()
+			.verifyWith(getSecretKey())
+			.build()
+			.parseSignedClaims(token)
+			.getPayload();
+		return Long.parseLong(claims.getSubject());
 	}
 }

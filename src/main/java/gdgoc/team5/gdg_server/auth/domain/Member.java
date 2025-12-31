@@ -1,5 +1,11 @@
 package gdgoc.team5.gdg_server.auth.domain;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import gdgoc.team5.gdg_server.auth.controller.request.SignUpRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
 import jakarta.persistence.Column;
@@ -78,6 +84,11 @@ public class Member {
 			.isPending(dto.isPending())
 			.isAdmin(dto.isAdmin())
 			.build();
+	}
+
+	// Spring Security를 위한 권한 정보
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority("ROLE_" + memberRole.name()));
 	}
 
 }
