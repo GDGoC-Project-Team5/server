@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gdgoc.team5.gdg_server.auth.controller.request.SignUpRequestDto;
+import gdgoc.team5.gdg_server.auth.controller.request.SocialLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.response.LoginResponseDto;
 import gdgoc.team5.gdg_server.auth.service.AuthService;
@@ -39,6 +40,16 @@ public class AuthController {
 		HttpServletResponse response
 	) {
 		LoginResponseDto loginResponseDto = authService.signup(dto, response);
+		return ResponseEntity.ok(loginResponseDto);
+	}
+
+	@PostMapping("/login/social")
+	@Operation(summary = "소셜 로그인 (구현 예정)")
+	public ResponseEntity<LoginResponseDto> social(
+		@RequestBody @Valid SocialLoginRequestDto dto,
+		HttpServletResponse response
+	) {
+		LoginResponseDto loginResponseDto = authService.socialLogin(dto, response);
 		return ResponseEntity.ok(loginResponseDto);
 	}
 
