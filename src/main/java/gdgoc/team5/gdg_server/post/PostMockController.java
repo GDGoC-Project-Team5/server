@@ -14,7 +14,7 @@ public class PostMockController {
 
     private final PostService postService;
 
-    @PostMapping("/posts")
+    @PostMapping("/posts/create")
     public PostResponseDto createPost(@RequestBody PostRequestDto requestDto) {
         return postService.createPost(requestDto);
     }
@@ -22,5 +22,10 @@ public class PostMockController {
     @GetMapping("/posts/{id}")
     public PostResponseDto getPostById(@PathVariable Long id) {
         return postService.getPostById(id);
+    }
+
+    @GetMapping("/posts/read")
+    public List<PostResponseDto> getAllPosts() {
+        return postService.getAllPosts();
     }
 }
