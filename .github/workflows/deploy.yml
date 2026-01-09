@@ -67,7 +67,7 @@ jobs:
             # 5. 실행
             cd $APP_PATH/current
             echo "스프링 부트 실행 중..."
-            sudo bash -c "nohup java -jar -Dspring.profiles.active=prod -Dspring.config.location=file:/usr/share/nginx/server/application-prod.yml project.jar > ./output.log 2>&1 &"            
+            sudo bash -c "nohup java -jar -Dspring.profiles.active=prod project.jar > ./output.log 2>&1 &"            
             
             # 6. 세션 독립 및 확인을 위한 대기
             disown || true
