@@ -1,18 +1,24 @@
 package gdgoc.team5.gdg_server.profile.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import gdgoc.team5.gdg_server.profile.controller.request.ProfileRequestDto;
+import gdgoc.team5.gdg_server.profile.controller.response.ProfileListResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileResponseDto;
 import gdgoc.team5.gdg_server.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -68,5 +74,28 @@ public class ProfileController {
 	) {
 		ProfileResponseDto response = profileService.getProfile(tokenInfo.memberId());
 		return ResponseEntity.ok(response);
+	}
+
+	@Operation(
+		summary = "멤버 목록 조회",
+		description = "기수별 멤버 목록을 조회합니다. generation 파라미터가 없으면 전체 멤버를 기수 오름차순으로 반환합니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "멤버 목록 조회 성공",
+			content = @Content(
+				mediaType = "application/json",
+				array = @ArraySchema(schema = @Schema(implementation = ProfileListResponseDto.class))
+			)
+		)
+	})
+	@GetMapping("/members")
+	public ResponseEntity<List<ProfileListResponseDto>> getMembersByGeneration(
+		@Parameter(required = true, description = "기수 (필수)", example = "5")
+		@RequestParam(required = false) Integer generation
+	) {
+		List<ProfileListResponseDto> members = profileService.getMembersByGeneration(generation);
+		return ResponseEntity.ok(members);
 	}
 }
