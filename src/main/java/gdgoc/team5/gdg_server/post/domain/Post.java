@@ -33,6 +33,8 @@ public class Post {
 
     private LocalDateTime createdDate;
 
+
+
     //댓글은 지금 필요없을듯?
     //@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     //private List<Comment> comments = new ArrayList<>();
