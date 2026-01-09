@@ -7,10 +7,9 @@ import lombok.Builder;
 @Builder
 public record TokenInfo(Long memberId, String role, String tokenType, Boolean isAdmin) {
 
-	public static TokenInfo from(Long memberId, String role, String tokenType, Boolean isAdmin) {
+	public static TokenInfo from(Long memberId, String tokenType, Boolean isAdmin) {
 		return TokenInfo.builder()
 			.memberId(memberId)
-			.role(role)
 			.tokenType(tokenType)
 			.isAdmin(isAdmin)
 			.build();
