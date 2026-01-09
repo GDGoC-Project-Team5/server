@@ -45,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				TokenInfo tokenInfo = TokenInfo.from(
 					member.getId(),
 					member.getMemberRole().name(),
-					"Bearer"
+					"Bearer",
+					member.getIsAdmin()
 				);
 				request.setAttribute("tokenInfo", tokenInfo);
 

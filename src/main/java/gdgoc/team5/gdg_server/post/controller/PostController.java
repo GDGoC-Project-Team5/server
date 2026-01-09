@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
+import gdgoc.team5.gdg_server.common.controller.security.AdminOnly;
 import gdgoc.team5.gdg_server.post.controller.request.PostRequestDto;
 import gdgoc.team5.gdg_server.post.controller.response.PostListResponseDto;
 import gdgoc.team5.gdg_server.post.controller.response.PostResponseDto;
@@ -40,13 +41,15 @@ public class PostController {
 
 	@Operation(
 		summary = "게시글 작성",
-		description = "새로운 게시글을 작성합니다. 파일 업로드 기능은 File 컨트롤러에 구현 예정입니다."
+		description = "새로운 게시글을 작성합니다. 파일 업로드 기능은 File 컨트롤러에 구현 예정입니다. **관리자 권한이 필요합니다.**"
 	)
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "게시글 작성 성공"),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
-		@ApiResponse(responseCode = "401", description = "인증 실패")
+		@ApiResponse(responseCode = "401", description = "인증 실패"),
+		@ApiResponse(responseCode = "403", description = "관리자 권한 필요")
 	})
+	@AdminOnly
 	@PostMapping("")
 	public ResponseEntity<Void> createPost(
 		@RequestBody @Valid PostRequestDto requestDto,

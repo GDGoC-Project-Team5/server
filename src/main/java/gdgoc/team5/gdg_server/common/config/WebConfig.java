@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfoArgumentResolver;
+import gdgoc.team5.gdg_server.common.controller.security.AdminCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
+	private final AdminCheckInterceptor adminCheckInterceptor;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -37,6 +41,12 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(new TokenInfoArgumentResolver());
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(adminCheckInterceptor)
+			.addPathPatterns("/**"); // 모든 경로에 인터셉터 적용
 	}
 }
 
