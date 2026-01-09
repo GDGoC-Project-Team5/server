@@ -42,29 +42,29 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. 경로 및 파일 준비 (sudo를 각 명령어에 붙임)
+            # 1. 파일 이동 (이름에 상관없이 .jar 파일을 찾아 project.jar로 변경)
+            # -plain.jar는 제외하고 가장 최근의 jar 파일을 옮깁니다.
             sudo mkdir -p /usr/share/nginx/current
-            sudo mv /usr/share/nginx/tobe/project.jar /usr/share/nginx/current/project.jar || true
+            sudo find /usr/share/nginx/tobe -name "*.jar" ! -name "*-plain.jar" -exec mv {} /usr/share/nginx/current/project.jar \;
 
             # 2. 기존 프로세스 종료
             sudo fuser -k 8080/tcp || true
             sleep 3
 
-            # 3. 실행 (핵심: 입출력을 완벽히 차단하여 세션 독립)
+            # 3. 실행 (sudo bash -c를 사용해야 > 리디렉션 권한 에러가 안 납니다)
             cd /usr/share/nginx/current
-            sudo nohup java -jar -Dspring.profiles.active=prod project.jar > ./output.log 2>&1 < /dev/null &
+            sudo bash -c "nohup java -jar -Dspring.profiles.active=prod project.jar > ./output.log 2>&1 &"
 
-            # 4. 쉘 독립 및 잠시 대기
+            # 4. 세션 독립 및 확인
             disown
             sleep 10
 
-            # 5. 배포 확인 로직 (이게 있어야 진짜 성공/실패를 알 수 있음)
             if pgrep -f project.jar > /dev/null; then
-              echo "✅ [SUCCESS] 스프링 부트가 정상적으로 실행 중입니다."
-              sudo rm -rf /usr/share/nginx/tobe
+              echo "✅ 배포 성공: 스프링 부트가 실행 중입니다."
+              sudo rm -rf /usr/share/nginx/tobe/*
               exit 0
             else
-              echo "❌ [FAIL] 스프링 부트 실행에 실패했습니다. 로그를 확인하세요."
-              cat ./output.log
+              echo "❌ 배포 실패: 아래 로그를 확인하세요."
+              sudo cat /usr/share/nginx/current/output.log
               exit 1
             fi
