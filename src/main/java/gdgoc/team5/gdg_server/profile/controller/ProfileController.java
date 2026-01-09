@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import gdgoc.team5.gdg_server.profile.controller.request.ProfileRequestDto;
+import gdgoc.team5.gdg_server.profile.controller.response.ProfileDetailResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileListResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileResponseDto;
 import gdgoc.team5.gdg_server.profile.service.ProfileService;
@@ -98,4 +100,26 @@ public class ProfileController {
 		List<ProfileListResponseDto> members = profileService.getMembersByGeneration(generation);
 		return ResponseEntity.ok(members);
 	}
+
+	@Operation(
+		summary = "특정 멤버 프로필 상세 조회",
+		description = "특정 멤버의 프로필 상세 정보를 조회합니다. 이름, 이메일, SNS 링크, 한줄소개, 학과, 기술스택을 반환합니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "멤버 프로필 조회 성공",
+			content = @Content(schema = @Schema(implementation = ProfileDetailResponseDto.class))
+		),
+		@ApiResponse(responseCode = "404", description = "회원 또는 프로필을 찾을 수 없음")
+	})
+	@GetMapping("/members/{memberId}")
+	public ResponseEntity<ProfileDetailResponseDto> getMemberProfile(
+		@Parameter(description = "회원 ID", required = true, example = "1")
+		@PathVariable Long memberId
+	) {
+		ProfileDetailResponseDto profile = profileService.getMemberProfile(memberId);
+		return ResponseEntity.ok(profile);
+	}
+
 }

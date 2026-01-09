@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gdgoc.team5.gdg_server.auth.domain.Member;
 import gdgoc.team5.gdg_server.auth.repository.MemberRepository;
 import gdgoc.team5.gdg_server.profile.controller.request.ProfileRequestDto;
+import gdgoc.team5.gdg_server.profile.controller.response.ProfileDetailResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileListResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileResponseDto;
 import gdgoc.team5.gdg_server.profile.domain.Profile;
@@ -89,5 +90,18 @@ public class ProfileService {
 				return ProfileListResponseDto.fromDomain(profile, member.getRealName());
 			})
 			.collect(Collectors.toList());
+	}
+
+	// 특정 멤버의 프로필 상세 조회
+	public ProfileDetailResponseDto getMemberProfile(Long memberId) {
+		// Member 조회
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다: memberId=" + memberId));
+
+		// Profile 조회
+		Profile profile = profileRepository.findByMemberId(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("프로필을 찾을 수 없습니다: memberId=" + memberId));
+
+		return ProfileDetailResponseDto.fromDomain(member, profile);
 	}
 }
