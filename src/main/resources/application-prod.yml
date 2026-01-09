@@ -13,6 +13,11 @@ spring:
       hibernate:
         format_sql: false
 
+  sql:
+    init:
+      mode: always  # data-skill.sql 항상 실행
+      data-locations: classpath:data-skill.sql
+
 jwt:
   secret: VGhpcyBpcyBhIHZlcnkgc2ChOoJlIHNlY3JldCBrZXkgZm9yIEpXVCAoMzJiYnl0ZXMpIQ==  # 예시 비밀 키 (Base64 인코딩된 문자열)
   accessExpiration: 3600000                 # 1시간 (3600000 밀리초)
