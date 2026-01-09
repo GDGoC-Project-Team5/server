@@ -42,27 +42,37 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. 실행 가능한 JAR 파일 하나만 골라서 app.jar로 이동 (plain.jar 제외)
-            find /usr/share/nginx/server/tobe -name "*.jar" ! -name "*-plain.jar" -exec mv {} /usr/share/nginx/server/app.jar \;
-            
+            # 1. JAR 파일 이동 (권한 에러 방지를 위해 sudo 권한 권장)
+            sudo find /usr/share/nginx/server/tobe -name "*.jar" ! -name "*-plain.jar" -exec mv {} /usr/share/nginx/server/app.jar \;
+
             # 2. 기존 실행 중인 Java 프로세스 종료
             PID=$(pgrep -f app.jar)
             if [ -n "$PID" ]; then
-            echo "기존 프로세스(PID: $PID)를 종료합니다..."
-            kill -15 $PID
-            sleep 5
-            
-            # 5초 뒤에도 프로세스가 살아있다면 강제 종료
-            if ps -p $PID > /dev/null; then
-            echo "프로세스가 종료되지 않아 강제 종료(-9)합니다."
-            kill -9 $PID
+              echo "기존 프로세스(PID: $PID)를 종료합니다..."
+              # kill 명령어 뒤에 || true를 붙여 종료 신호 자체를 에러로 보지 않게 함
+              sudo kill -15 $PID || true
+              sleep 5
+
+              # 여전히 살아있다면 강제 종료
+              if ps -p $PID > /dev/null; then
+                echo "프로세스가 강제 종료(-9)합니다."
+                sudo kill -9 $PID || true
+              fi
             fi
-            fi
-            
-            # 3. 새 버전 실행 (prod 프로필)
+
+            # 3. 새 버전 실행
             cd /usr/share/nginx/server
-            # 이전에 남은 임시 파일들 정리
-            rm -rf /usr/share/nginx/server/tobe/*
-            
-            nohup java -jar -Dspring.profiles.active=prod app.jar > nohup.out 2>&1 &
-            echo "새 버전 배포 완료!"
+            sudo rm -rf /usr/share/nginx/server/tobe/*
+
+            # nohup 실행 시 로그 출력 경로를 명시하고 백그라운드 실행을 확실히 함
+            sudo nohup java -jar -Dspring.profiles.active=prod app.jar > nohup.out 2>&1 &
+
+            # 4. 잠시 대기 후 프로세스가 정상적으로 떴는지 확인
+            sleep 2
+            if pgrep -f app.jar > /dev/null; then
+              echo "새 버전 배포 완료 및 실행 중!"
+              exit 0
+            else
+              echo "배포 실패: 프로세스가 뜨지 않았습니다."
+              exit 1
+            fi
