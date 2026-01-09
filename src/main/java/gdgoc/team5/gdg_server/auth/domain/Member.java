@@ -1,11 +1,5 @@
 package gdgoc.team5.gdg_server.auth.domain;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import gdgoc.team5.gdg_server.auth.controller.request.SignUpRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
 import gdgoc.team5.gdg_server.common.domain.BaseEntity;
@@ -45,14 +39,7 @@ public class Member extends BaseEntity {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private MemberRole memberRole;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
 	private MemberType memberType;
-
-	@Column(nullable = false)
-	private Integer generation;    // 기수
 
 	@Column(nullable = false)
 	private Boolean isPending;        // 승인 여부
@@ -66,9 +53,7 @@ public class Member extends BaseEntity {
 		this.username = dto.username();
 		this.email = dto.email();
 		this.realName = dto.realName();
-		this.memberRole = dto.memberRole();
 		this.memberType = dto.memberType();
-		this.generation = dto.generation();
 		this.isPending = false;
 		this.isAdmin = false;
 	}
@@ -78,18 +63,10 @@ public class Member extends BaseEntity {
 		return Member.builder()
 			.username(dto.username())
 			.realName(dto.username())
-			.memberRole(MemberRole.MEMBER)
 			.memberType(MemberType.TEST)
 			.email(dto.username() + "@test.com")
-			.generation(1)
 			.isPending(dto.isPending())
 			.isAdmin(dto.isAdmin())
 			.build();
 	}
-
-	// Spring Security를 위한 권한 정보
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority("ROLE_" + memberRole.name()));
-	}
-
 }

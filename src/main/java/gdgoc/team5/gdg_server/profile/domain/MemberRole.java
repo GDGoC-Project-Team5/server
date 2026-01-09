@@ -1,4 +1,4 @@
-package gdgoc.team5.gdg_server.auth.domain;
+package gdgoc.team5.gdg_server.profile.domain;
 
 public enum MemberRole {
 	MEMBER,

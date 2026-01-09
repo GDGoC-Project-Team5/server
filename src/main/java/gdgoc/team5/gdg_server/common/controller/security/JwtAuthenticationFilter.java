@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				// 4. TokenInfo를 Request Attribute에 설정 (ArgumentResolver에서 사용)
 				TokenInfo tokenInfo = TokenInfo.from(
 					member.getId(),
-					member.getMemberRole().name(),
 					"Bearer",
 					member.getIsAdmin()
 				);
@@ -54,8 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(
 						member,
-						null,
-						member.getAuthorities()
+						null
 					);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);

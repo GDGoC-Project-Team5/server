@@ -1,7 +1,7 @@
 package gdgoc.team5.gdg_server.auth.controller.request;
 
-import gdgoc.team5.gdg_server.auth.domain.MemberRole;
 import gdgoc.team5.gdg_server.auth.domain.MemberType;
+import gdgoc.team5.gdg_server.profile.domain.MemberRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -20,9 +20,6 @@ public record SignUpRequestDto(
 	MemberRole memberRole,
 
 	@NotBlank(message = "멤버 타입은 빈칸일 수 없습니다.")
-	MemberType memberType,
-
-	@NotBlank(message = "멤버 기수는 빈칸일 수 없습니다.")
-	Integer generation
+	MemberType memberType
 ) {
 }
