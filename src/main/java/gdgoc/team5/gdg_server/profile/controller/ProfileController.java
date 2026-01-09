@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
+import gdgoc.team5.gdg_server.profile.controller.request.GithubAnalyzeRequestDto;
 import gdgoc.team5.gdg_server.profile.controller.request.ProfileRequestDto;
+import gdgoc.team5.gdg_server.profile.controller.response.GithubAnalyzeResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileDetailResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileListResponseDto;
 import gdgoc.team5.gdg_server.profile.controller.response.ProfileResponseDto;
@@ -120,6 +123,29 @@ public class ProfileController {
 	) {
 		ProfileDetailResponseDto profile = profileService.getMemberProfile(memberId);
 		return ResponseEntity.ok(profile);
+	}
+
+	@Operation(
+		summary = "GitHub 프로필 분석",
+		description = "GitHub 사용자 ID를 입력받아 외부 AI 분석 API(localhost:8000)를 호출하여 개발자 프로필을 분석합니다. " +
+			"프로필 정보, 사용 언어 통계, 협업 능력, AI 분석 결과를 반환합니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "GitHub 분석 성공",
+			content = @Content(schema = @Schema(implementation = GithubAnalyzeResponseDto.class))
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (GitHub ID가 유효하지 않거나 분석 서버 요청 오류)"),
+		@ApiResponse(responseCode = "500", description = "분석 서버 오류 또는 네트워크 오류")
+	})
+	@PostMapping("/github-analyze")
+	public ResponseEntity<GithubAnalyzeResponseDto> analyzeGithub(
+		@Parameter(description = "GitHub 분석 요청 (GitHub 사용자 ID)", required = true)
+		@RequestBody GithubAnalyzeRequestDto request
+	) {
+		GithubAnalyzeResponseDto response = profileService.analyzeGithub(request.githubId());
+		return ResponseEntity.ok(response);
 	}
 
 }
