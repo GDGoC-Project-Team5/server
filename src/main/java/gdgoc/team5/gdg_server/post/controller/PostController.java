@@ -18,6 +18,7 @@ import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import gdgoc.team5.gdg_server.post.controller.request.PostRequestDto;
 import gdgoc.team5.gdg_server.post.controller.response.PostListResponseDto;
+import gdgoc.team5.gdg_server.post.controller.response.PostResponseDto;
 import gdgoc.team5.gdg_server.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class PostController {
 	}
 
 	@GetMapping("/{postId}")
-	public PostListResponseDto getPostById(
+	public PostResponseDto getPostById(
 		@PathVariable(name = "postId") Long postId,
 		@AuthenticatedToken TokenInfo tokenInfo
 	) {
@@ -55,14 +56,8 @@ public class PostController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deletePost(@PathVariable Long id) {
-		try {
-			postService.deletePost(id);
-			return ResponseEntity.ok("게시물이 삭제되었습니다.");
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity
-				.status(404)
-				.body(e.getMessage());
-		}
+	public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+		postService.deletePost(id);
+		return ResponseEntity.ok().build();
 	}
 }

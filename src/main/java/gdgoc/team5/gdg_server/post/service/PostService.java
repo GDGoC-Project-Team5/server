@@ -1,6 +1,5 @@
 package gdgoc.team5.gdg_server.post.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,19 +10,18 @@ import gdgoc.team5.gdg_server.auth.repository.MemberRepository;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import gdgoc.team5.gdg_server.post.controller.request.PostRequestDto;
 import gdgoc.team5.gdg_server.post.controller.response.PostListResponseDto;
+import gdgoc.team5.gdg_server.post.controller.response.PostResponseDto;
 import gdgoc.team5.gdg_server.post.domain.Post;
 import gdgoc.team5.gdg_server.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
 
 	private final PostRepository postRepository;
 	private final MemberRepository memberRepository;
-
-	@Value("${file.upload-dir:uploads}")
-	private String uploadDir;
 
 	@Transactional
 	public void createPost(PostRequestDto requestDto, TokenInfo tokenInfo) {
@@ -33,16 +31,20 @@ public class PostService {
 
 	// 단일 게시물 조회 기능 (+조회수 증가)
 	@Transactional
-	public PostListResponseDto getPostById(Long id) {
+	public PostResponseDto getPostById(Long id) {
 		Post post = postRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 게시글을 찾을 수 없습니다: " + id));
 
 		// 조회수 증가
 		post.setViews(post.getViews() + 1);
-		return null;
+
+		// memberId로 작성자 정보 조회
+		Member member = memberRepository.findById(post.getMemberId())
+			.orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다: " + post.getMemberId()));
+
+		return PostResponseDto.fromDomain(post, member.getRealName());
 	}
 
-	@Transactional(readOnly = true)
 	public Page<PostListResponseDto> getAllPosts(Pageable pageable, String title) {
 		Page<Post> posts;
 
@@ -75,7 +77,6 @@ public class PostService {
 	public void deletePost(Long id) {
 		Post post = postRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 게시글을 찾을 수 없습니다: " + id));
-
 		postRepository.delete(post);
 	}
 }
