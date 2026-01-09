@@ -55,4 +55,54 @@ public class Profile extends BaseEntity {
 	@Column(length = 500)
 	private String snsLink3;  // SNS 링크 3 (예: Instagram)
 
+	// 프로필 업데이트 메서드
+	public void updateProfile(
+		String department,
+		String bio,
+		MemberRole memberRole,
+		Integer generation,
+		String part,
+		String skills,
+		String snsLink1,
+		String snsLink2,
+		String snsLink3
+	) {
+		this.department = department;
+		this.bio = bio;
+		this.memberRole = memberRole;
+		this.generation = generation;
+		this.part = part;
+		this.skills = skills;
+		this.snsLink1 = snsLink1;
+		this.snsLink2 = snsLink2;
+		this.snsLink3 = snsLink3;
+	}
+
+	// 프로필 생성 팩토리 메서드
+	public static Profile createProfile(
+		Long memberId,
+		String department,
+		String bio,
+		MemberRole memberRole,
+		Integer generation,
+		String part,
+		String skills,
+		String snsLink1,
+		String snsLink2,
+		String snsLink3
+	) {
+		return Profile.builder()
+			.memberId(memberId)
+			.department(department)
+			.bio(bio)
+			.memberRole(memberRole)
+			.generation(generation)
+			.part(part)
+			.skills(skills)
+			.snsLink1(snsLink1)
+			.snsLink2(snsLink2)
+			.snsLink3(snsLink3)
+			.build();
+	}
+
 }
