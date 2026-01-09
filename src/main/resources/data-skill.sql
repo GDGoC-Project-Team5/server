@@ -50,13 +50,28 @@ INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Kuber
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Jenkins', 'DevOps', NOW(), NOW());
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('GitHub Actions', 'DevOps', NOW(), NOW());
 
+-- 디자인
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Figma', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Adobe XD', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Sketch', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Photoshop', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Illustrator', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('After Effects', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Premiere Pro', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Framer', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Canva', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('InVision', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Zeplin', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Miro', 'Design', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('FigJam', 'Design', NOW(), NOW());
+
 -- 도구
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Git', 'Tool', NOW(), NOW());
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('GitHub', 'Tool', NOW(), NOW());
-INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Figma', 'Tool', NOW(), NOW());
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Postman', 'Tool', NOW(), NOW());
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Jira', 'Tool', NOW(), NOW());
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Slack', 'Tool', NOW(), NOW());
+INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('Notion', 'Tool', NOW(), NOW());
 
 -- 기타
 INSERT IGNORE INTO skill (name, category, created_at, updated_at) VALUES ('GraphQL', 'Other', NOW(), NOW());
