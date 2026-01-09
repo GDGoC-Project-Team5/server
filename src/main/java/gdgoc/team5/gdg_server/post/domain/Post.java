@@ -3,7 +3,7 @@ package gdgoc.team5.gdg_server.post.domain;
 import java.time.LocalDate;
 
 import gdgoc.team5.gdg_server.common.domain.BaseEntity;
-import gdgoc.team5.gdg_server.post.dto.PostRequestDto;
+import gdgoc.team5.gdg_server.post.controller.request.PostRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,12 +35,6 @@ public class Post extends BaseEntity {
 
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String content;
-
-	private String fileName;        // 원본 파일명
-
-	private String filePath;        // 저장된 파일 경로
-
-	private Long fileSize;          // 파일 크기
 
 	@Column(nullable = false)
 	private Long memberId;

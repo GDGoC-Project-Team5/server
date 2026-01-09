@@ -1,4 +1,4 @@
-package gdgoc.team5.gdg_server.post.dto;
+package gdgoc.team5.gdg_server.post.controller.request;
 
 import java.time.LocalDate;
 
