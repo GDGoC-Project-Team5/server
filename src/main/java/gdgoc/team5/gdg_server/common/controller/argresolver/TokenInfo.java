@@ -5,13 +5,14 @@ import lombok.Builder;
 
 @Hidden
 @Builder
-public record TokenInfo(Long memberId, String role, String tokenType) {
+public record TokenInfo(Long memberId, String role, String tokenType, Boolean isAdmin) {
 
-	public static TokenInfo from(Long memberId, String role, String tokenType) {
+	public static TokenInfo from(Long memberId, String role, String tokenType, Boolean isAdmin) {
 		return TokenInfo.builder()
 			.memberId(memberId)
 			.role(role)
 			.tokenType(tokenType)
+			.isAdmin(isAdmin)
 			.build();
 	}
 }

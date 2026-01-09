@@ -9,6 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import gdgoc.team5.gdg_server.auth.domain.Member;
 import gdgoc.team5.gdg_server.auth.repository.MemberRepository;
+import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,15 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	) throws ServletException, IOException {
 
-        //추가 /post/** JWT검증 건너뛰기
-        String requestURI = request.getRequestURI();
-
-        if (requestURI.startsWith("/posts/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-
 		// 1. Authorization 헤더에서 JWT 추출
 		String token = extractTokenFromRequest(request);
 
@@ -49,7 +41,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				.orElse(null);
 
 			if (member != null) {
-				// 4. SecurityContext(ThreadLocal)에 인증 정보 저장
+				// 4. TokenInfo를 Request Attribute에 설정 (ArgumentResolver에서 사용)
+				TokenInfo tokenInfo = TokenInfo.from(
+					member.getId(),
+					member.getMemberRole().name(),
+					"Bearer",
+					member.getIsAdmin()
+				);
+				request.setAttribute("tokenInfo", tokenInfo);
+
+				// 5. SecurityContext(ThreadLocal)에 인증 정보 저장
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(
 						member,
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}
 
-		// 5. 다음 필터로 진행
+		// 6. 다음 필터로 진행
 		filterChain.doFilter(request, response);
 	}
 

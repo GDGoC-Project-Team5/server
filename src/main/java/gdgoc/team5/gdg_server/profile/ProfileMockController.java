@@ -1,5 +1,21 @@
 package gdgoc.team5.gdg_server.profile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
+import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,14 +27,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Slf4j
 @RestController
 @RequestMapping("/mock/profile")
 @Tag(name = "Profile Mock", description = "프로필 관련 Mock API")
@@ -233,8 +244,11 @@ public class ProfileMockController {
 		@Parameter(description = "기수 필터 (1-5)") @RequestParam(required = false) Integer generation,
 		@Parameter(description = "기술스택 검색 키워드") @RequestParam(required = false) String techStack,
 		@Parameter(description = "페이지 번호 (0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
-		@Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
+		@Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size,
+		@AuthenticatedToken TokenInfo tokenInfo
 	) {
+
+		log.info("token: {}", tokenInfo.memberId());
 		List<ProfileDetailDto> allProfiles = createMockProfiles();
 
 		// 필터 적용
@@ -271,7 +285,7 @@ public class ProfileMockController {
 			.pageNumber(page)
 			.pageSize(size)
 			.totalElements(filteredProfiles.size())
-			.totalPages((int) Math.ceil((double) filteredProfiles.size() / size))
+			.totalPages((int)Math.ceil((double)filteredProfiles.size() / size))
 			.last(end >= filteredProfiles.size())
 			.build();
 
