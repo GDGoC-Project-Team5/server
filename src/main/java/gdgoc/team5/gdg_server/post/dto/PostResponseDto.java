@@ -1,5 +1,6 @@
 package gdgoc.team5.gdg_server.post.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import gdgoc.team5.gdg_server.post.domain.Post;
@@ -9,11 +10,14 @@ public record PostResponseDto(
 	Long views,
 	String title,
 	String content,
-	String author,
+	Long memberId,
 	String fileName,
 	String filePath,
 	Long fileSize,
-	LocalDateTime createdDate
+	Boolean showOnCalendar,
+	LocalDate calendarDate,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt
 ) {
 	public PostResponseDto(Post post) {
 		this(
@@ -21,11 +25,14 @@ public record PostResponseDto(
 			post.getViews(),
 			post.getTitle(),
 			post.getContent(),
-			post.getAuthor(),
+			post.getMemberId(),
 			post.getFileName(),
 			post.getFilePath(),
 			post.getFileSize(),
-			post.getCreatedDate()
+			post.getShowOnCalendar(),
+			post.getCalendarDate(),
+			post.getCreatedAt(),
+			post.getUpdatedAt()
 		);
 	}
 }

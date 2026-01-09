@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
 import gdgoc.team5.gdg_server.post.domain.Post;
 import gdgoc.team5.gdg_server.post.dto.PostRequestDto;
 import gdgoc.team5.gdg_server.post.dto.PostResponseDto;
@@ -35,28 +36,22 @@ public class PostService {
 	private String uploadDir;
 
 	@Transactional
-	public PostResponseDto createPost(PostRequestDto requestDto, MultipartFile file) {
+	public void createPost(PostRequestDto requestDto, TokenInfo tokenInfo) {
 
-		Post post = new Post(
-			requestDto.title(),
-			requestDto.content(),
-			requestDto.author()
-		);
+		Post post = Post.createPost(requestDto, tokenInfo.memberId());
 
-		// 파일 처리
-		if (file != null && !file.isEmpty()) {
-			try {
-				String savedFileName = saveFile(file);
-				post.setFileName(file.getOriginalFilename());
-				post.setFilePath(uploadDir + "/" + savedFileName);
-				post.setFileSize(file.getSize());
-			} catch (IOException e) {
-				throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
-			}
-		}
-
-		Post savedPost = postRepository.save(post);
-		return new PostResponseDto(savedPost);
+		// // 파일 처리
+		// if (file != null && !file.isEmpty()) {
+		// 	try {
+		// 		String savedFileName = saveFile(file);
+		// 		post.setFileName(file.getOriginalFilename());
+		// 		post.setFilePath(uploadDir + "/" + savedFileName);
+		// 		post.setFileSize(file.getSize());
+		// 	} catch (IOException e) {
+		// 		throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+		// 	}
+		// }
+		postRepository.save(post);
 	}
 
 	// 파일 저장 로직
