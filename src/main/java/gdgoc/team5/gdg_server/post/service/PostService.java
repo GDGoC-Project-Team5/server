@@ -34,15 +34,15 @@ public class PostService {
 	@Value("${file.upload-dir:uploads}")
 	private String uploadDir;
 
-	// ✅ 파일 파라미터 추가
 	@Transactional
 	public PostResponseDto createPost(PostRequestDto requestDto, MultipartFile file) {
+
 		Post post = new Post(
 			requestDto.title(),
 			requestDto.content(),
 			requestDto.author()
 		);
-		
+
 		// 파일 처리
 		if (file != null && !file.isEmpty()) {
 			try {

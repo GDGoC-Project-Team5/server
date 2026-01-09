@@ -1,12 +1,15 @@
 package gdgoc.team5.gdg_server.common.config;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfoArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +32,11 @@ public class WebConfig implements WebMvcConfigurer {
 			.allowedHeaders("*") // 모든 헤더 허용
 			.allowCredentials(true) // 자격 증명 허용 여부
 			.maxAge(3600); // preflight 요청 캐시 시간
+	}
+
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(new TokenInfoArgumentResolver());
 	}
 }
 
