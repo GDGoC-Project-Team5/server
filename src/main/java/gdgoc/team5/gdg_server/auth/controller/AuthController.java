@@ -12,10 +12,17 @@ import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.response.LoginResponseDto;
 import gdgoc.team5.gdg_server.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "인증", description = "회원가입, 로그인, 소셜 로그인 등 인증 관련 API")
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
@@ -23,9 +30,26 @@ public class AuthController {
 
 	private final AuthService authService;
 
+	@Operation(
+		summary = "테스트 로그인",
+		description = "개발 환경에서 사용하는 간편 로그인 API입니다. " +
+			"존재하지 않는 username을 입력하면 자동으로 회원가입이 진행되고, " +
+			"존재하는 username을 입력하면 로그인이 진행됩니다. "
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "로그인 또는 회원가입 성공. JWT 토큰이 쿠키에 설정됩니다.",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = LoginResponseDto.class)
+			)
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (필수 필드 누락 또는 형식 오류)")
+	})
 	@PostMapping("/login/test")
-	@Operation(summary = "테스트 로그인", description = "존재하지 않는 username 입력시 회원가입, 존재하는 username 입력시 로그인")
 	public ResponseEntity<LoginResponseDto> testLogin(
+		@Parameter(description = "테스트 로그인 요청 정보", required = true)
 		@RequestBody @Valid TestLoginRequestDto dto,
 		HttpServletResponse response
 	) {
@@ -33,9 +57,26 @@ public class AuthController {
 		return ResponseEntity.ok(loginResponseDto);
 	}
 
+	@Operation(
+		summary = "회원가입",
+		description = "신규 회원가입 API입니다. " +
+			"memberType은 로그인 형식(구글, 로컬 등)을 구분합니다. " +
+			"회원가입 완료 후 JWT 토큰이 쿠키에 자동으로 설정됩니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "회원가입 성공. JWT 토큰이 쿠키에 설정됩니다.",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = LoginResponseDto.class)
+			)
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (필수 필드 누락, 이메일 형식 오류, 중복 회원 등)")
+	})
 	@PostMapping("/signup")
-	@Operation(summary = "회원가입", description = "memberRole: 멤버, 코어, 리드 구분 / memberType: 로그인 형식 구분 (구글, 로컬 등)")
 	public ResponseEntity<LoginResponseDto> signup(
+		@Parameter(description = "회원가입 요청 정보", required = true)
 		@RequestBody @Valid SignUpRequestDto dto,
 		HttpServletResponse response
 	) {
@@ -43,9 +84,28 @@ public class AuthController {
 		return ResponseEntity.ok(loginResponseDto);
 	}
 
+	@Operation(
+		summary = "소셜 로그인",
+		description = "OAuth 소셜 로그인 API입니다. " +
+			"구글 등의 소셜 서비스에서 발급받은 인증 코드(code)를 전달하면, " +
+			"서버에서 사용자 정보를 조회하고 로그인 처리합니다. " +
+			"**현재 구현 진행 중입니다.**"
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "소셜 로그인 성공. JWT 토큰이 쿠키에 설정됩니다.",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = LoginResponseDto.class)
+			)
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (인증 코드 오류 또는 지원하지 않는 소셜 타입)"),
+		@ApiResponse(responseCode = "401", description = "소셜 로그인 인증 실패")
+	})
 	@PostMapping("/login/social")
-	@Operation(summary = "소셜 로그인 (구현 예정)")
 	public ResponseEntity<LoginResponseDto> social(
+		@Parameter(description = "소셜 로그인 요청 정보 (인증 코드 및 소셜 타입)", required = true)
 		@RequestBody @Valid SocialLoginRequestDto dto,
 		HttpServletResponse response
 	) {
