@@ -31,6 +31,13 @@ public class Post {
     @Column(nullable = false)
     private String author;
 
+    private String fileName;        // 원본 파일명
+
+    private String filePath;        // 저장된 파일 경로
+
+    private Long fileSize;          // 파일 크기
+
+
     private LocalDateTime createdDate;
 
 
@@ -39,18 +46,29 @@ public class Post {
     //@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     //private List<Comment> comments = new ArrayList<>();
 
-    public Post(Long id, Long views, String title, String content, String author, LocalDateTime createdDate) {
+    //PostResponseDto
+
+    public Post(Long id, String title, String content, String author, Long views, String fileName,
+                String filePath, Long fileSize, LocalDateTime createdDate) {
         this.id = id;
+        this.title = title;
+        this.content = content;
+        this.author = author;
         this.views = views != null ? views : 0L;
-        this.title = title;
-        this.content = content;
-        this.author = author;
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.fileSize = fileSize;
+        this.createdDate = createdDate;
+
     }
-    public Post(String title, String content, String author) {
+    public Post(String title, String content, String author, Long views) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.views = 0L;
+        this.views = views;
+    }
+
+    public Post(String title, String content, String author) {
     }
 
     @PrePersist

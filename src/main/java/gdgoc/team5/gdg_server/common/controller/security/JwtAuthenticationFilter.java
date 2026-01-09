@@ -28,6 +28,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	) throws ServletException, IOException {
 
+        //추가 /post/** JWT검증 건너뛰기
+        String requestURI = request.getRequestURI();
+
+        if (requestURI.startsWith("/posts/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
 		// 1. Authorization 헤더에서 JWT 추출
 		String token = extractTokenFromRequest(request);
 

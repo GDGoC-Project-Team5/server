@@ -9,5 +9,4 @@ public class GdgServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GdgServerApplication.class, args);
 	}
-
 }

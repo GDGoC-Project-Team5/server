@@ -4,8 +4,10 @@ import gdgoc.team5.gdg_server.post.dto.PostRequestDto;
 import gdgoc.team5.gdg_server.post.dto.PostResponseDto;
 import gdgoc.team5.gdg_server.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,9 +17,11 @@ public class PostMockController {
 
     private final PostService postService;
 
-    @PutMapping("/posts/write")
-    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto) {
-        return postService.createPost(requestDto);
+    @PutMapping(value = "/posts/write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PostResponseDto createPost(
+            @RequestPart("post") PostRequestDto requestDto,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        return postService.createPost(requestDto, file);
     }
 
     @GetMapping("/posts/getPost/{id}")
@@ -30,8 +34,16 @@ public class PostMockController {
         return postService.getAllPosts();
     }
 
-    @DeleteMapping("/posts/delete{id}")
-    public void deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
+    @DeleteMapping("/posts/delete/{id}")
+    public ResponseEntity<String> deletePost(@PathVariable Long id) {
+        try {
+            postService.deletePost(id);
+            return ResponseEntity.ok("게시물이 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(404)
+                    .body(e.getMessage());
+        }
     }
+
 }

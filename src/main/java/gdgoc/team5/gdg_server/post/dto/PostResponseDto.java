@@ -10,6 +10,9 @@ public record PostResponseDto(
         String title,
         String content,
         String author,
+        String fileName,
+        String filePath,
+        Long fileSize,
         LocalDateTime createdDate
 ) {
     public PostResponseDto(Post post) {
@@ -19,6 +22,9 @@ public record PostResponseDto(
                 post.getTitle(),
                 post.getContent(),
                 post.getAuthor(),
+                post.getFileName(),
+                post.getFilePath(),
+                post.getFileSize(),
                 post.getCreatedDate()
         );
     }
