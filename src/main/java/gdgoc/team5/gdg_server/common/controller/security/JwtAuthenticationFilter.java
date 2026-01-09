@@ -1,8 +1,10 @@
 package gdgoc.team5.gdg_server.common.controller.security;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -50,10 +52,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				request.setAttribute("tokenInfo", tokenInfo);
 
 				// 5. SecurityContext(ThreadLocal)에 인증 정보 저장
+				// isAdmin을 기반으로 권한 부여
+				String role = Boolean.TRUE.equals(member.getIsAdmin()) ? "ROLE_ADMIN" : "ROLE_USER";
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(
 						member,
-						null
+						null,
+						Collections.singletonList(new SimpleGrantedAuthority(role))
 					);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
