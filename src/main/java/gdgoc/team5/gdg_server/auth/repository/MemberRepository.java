@@ -11,6 +11,8 @@ public interface MemberRepository {
 
 	Optional<Member> findByUsername(String username);
 
+	Optional<Member> findBySocialId(String socialId);
+
 	Member save(Member member);
 
 	Optional<Member> findById(Long memberId);

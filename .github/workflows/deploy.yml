@@ -37,24 +37,32 @@ jobs:
       # 4. 서버 내 배포 및 실행 스크립트
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          # 1. GitHub Runner 레벨에서 환경 변수 선언
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          # 2. 선언된 환경 변수를 SSH 세션 내부로 전달
+          envs: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
           script: |
             APP_PATH="/usr/share/nginx/server"
-            
-            # 1. 파일 이동
+
             sudo mkdir -p $APP_PATH/current
             sudo find /home/ubuntu/tobe -name "*.jar" ! -name "*-plain.jar" -exec mv {} $APP_PATH/current/project.jar \;
-            
-            # 2. 기존 프로세스 종료 (실패해도 무시)
+
             sudo fuser -k 8080/tcp || true
-            
-            # 3. 실행 (백그라운드 실행 후 세션 분리)
+
             cd $APP_PATH/current
-            sudo nohup java -jar -Dspring.profiles.active=prod project.jar > ./output.log 2>&1 &
-            
-            # 4. 깃허브 액션에게 "성공했다"고 확실히 말해주기
+
+            # 3. 전달받은 변수 사용 (쉘 변수 문법 $변수명 사용)
+            sudo nohup java -jar \
+              -Dspring.profiles.active=prod \
+              -Dspring.security.oauth2.client.registration.google.client-id=$GOOGLE_CLIENT_ID \
+              -Dspring.security.oauth2.client.registration.google.client-secret=$GOOGLE_CLIENT_SECRET \
+              project.jar > ./output.log 2>&1 &
+
             sleep 2
             exit 0

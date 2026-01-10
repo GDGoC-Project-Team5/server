@@ -33,3 +33,11 @@ file:
     path: ${FILE_UPLOAD_PATH:/home/ubuntu/uploads}
     url-prefix: /files
 
+google:
+  oauth2:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri-local: http://localhost:5173/api/auth/callback/google
+    redirect-uri-prod: https://gdgoc-web-fe.vercel.app/api/auth/callback/google
+    token-uri: https://oauth2.googleapis.com/token
+
