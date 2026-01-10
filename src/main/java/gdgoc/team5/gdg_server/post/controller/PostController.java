@@ -1,9 +1,12 @@
 package gdgoc.team5.gdg_server.post.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
@@ -41,7 +46,7 @@ public class PostController {
 
 	@Operation(
 		summary = "게시글 작성",
-		description = "새로운 게시글을 작성합니다. 파일 업로드 기능은 File 컨트롤러에 구현 예정입니다. **관리자 권한이 필요합니다.**"
+		description = "새로운 게시글을 작성합니다. 파일 업로드는 별도 엔드포인트(POST /api/v1/posts/{postId}/files)를 사용하세요. **관리자 권한이 필요합니다.**"
 	)
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "게시글 작성 성공"),
@@ -51,11 +56,34 @@ public class PostController {
 	})
 	@AdminOnly
 	@PostMapping("")
-	public ResponseEntity<Void> createPost(
+	public ResponseEntity<PostResponseDto> createPost(
 		@RequestBody @Valid PostRequestDto requestDto,
 		@AuthenticatedToken TokenInfo tokenInfo
 	) {
-		postService.createPost(requestDto, tokenInfo);
+		PostResponseDto post = postService.createPost(requestDto, tokenInfo);
+		return ResponseEntity.ok(post);
+	}
+
+	@Operation(
+		summary = "게시글 파일 업로드",
+		description = "게시글에 파일을 업로드합니다. 파일은 최대 5MB까지 업로드 가능합니다. **관리자 권한이 필요합니다.**"
+	)
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "파일 업로드 성공"),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@ApiResponse(responseCode = "401", description = "인증 실패"),
+		@ApiResponse(responseCode = "403", description = "관리자 권한 필요"),
+		@ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+	})
+	@AdminOnly
+	@PostMapping(value = "/{postId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> uploadFiles(
+		@Parameter(description = "게시글 ID", required = true, example = "1")
+		@PathVariable("postId") Long postId,
+		@RequestPart(value = "files") List<MultipartFile> files,
+		@AuthenticatedToken TokenInfo tokenInfo
+	) {
+		postService.uploadFiles(postId, files);
 		return ResponseEntity.ok().build();
 	}
 

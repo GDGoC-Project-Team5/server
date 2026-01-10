@@ -10,10 +10,6 @@ public record TestLoginRequestDto(
 	@NotBlank(message = "username은 빈칸일 수 없습니다.")
 	String username,
 
-	@Schema(description = "승인 대기 여부 (false: 승인됨, true: 승인 대기)", example = "false")
-	@NotNull(message = "승인 여부는 빈칸일 수 없습니다.")
-	Boolean isPending,
-
 	@Schema(description = "관리자 계정 여부 (true: 관리자, false: 일반 사용자)", example = "false")
 	@NotNull(message = "관리자 계정 여부는 빈칸일 수 없습니다.")
 	Boolean isAdmin

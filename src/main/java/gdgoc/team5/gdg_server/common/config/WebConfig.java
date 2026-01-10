@@ -3,11 +3,13 @@ package gdgoc.team5.gdg_server.common.config;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfoArgumentResolver;
@@ -21,6 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 public class WebConfig implements WebMvcConfigurer {
 
 	private final AdminCheckInterceptor adminCheckInterceptor;
+
+	@Value("${file.upload.path}")
+	private String uploadPath;
+
+	@Value("${file.upload.url-prefix}")
+	private String urlPrefix;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -47,6 +55,13 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(adminCheckInterceptor)
 			.addPathPatterns("/**"); // 모든 경로에 인터셉터 적용
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler(urlPrefix + "/**")
+			.addResourceLocations("file:" + uploadPath + "/");
+		log.info("정적 리소스 핸들러 등록: {} -> {}", urlPrefix, uploadPath);
 	}
 }
 

@@ -55,6 +55,9 @@ public class Profile extends BaseEntity {
 	@Column(length = 500)
 	private String snsLink3;  // SNS 링크 3 (예: Instagram)
 
+	@Column(length = 500)
+	private String profileImageUrl;  // 프로필 이미지 URL
+
 	// 프로필 업데이트 메서드
 	public void updateProfile(
 		String department,
@@ -76,6 +79,11 @@ public class Profile extends BaseEntity {
 		this.snsLink1 = snsLink1;
 		this.snsLink2 = snsLink2;
 		this.snsLink3 = snsLink3;
+	}
+
+	// 프로필 이미지 업데이트 메서드
+	public void updateProfileImage(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
 	}
 
 	// 프로필 생성 팩토리 메서드

@@ -1,6 +1,7 @@
 package gdgoc.team5.gdg_server.post.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 		"AND YEAR(p.calendarDate) = :year AND MONTH(p.calendarDate) = :month " +
 		"ORDER BY p.calendarDate ASC")
 	List<Post> findCalendarPostsByYearAndMonth(@Param("year") int year, @Param("month") int month);
+
+	// 파일 정보를 포함한 게시글 조회
+	@Query("SELECT p FROM Post p LEFT JOIN FETCH p.files WHERE p.id = :id")
+	Optional<Post> findByIdWithFiles(@Param("id") Long id);
 }
