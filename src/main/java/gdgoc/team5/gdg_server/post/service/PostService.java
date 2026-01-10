@@ -71,7 +71,7 @@ public class PostService {
 	// 단일 게시물 조회 기능 (+조회수 증가)
 	@Transactional
 	public PostResponseDto getPostById(Long id) {
-		Post post = postRepository.findById(id)
+		Post post = postRepository.findByIdWithFiles(id)
 			.orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 게시글을 찾을 수 없습니다: " + id));
 
 		// 조회수 증가
@@ -109,7 +109,12 @@ public class PostService {
 
 	// hasFile 판단 로직
 	private Boolean checkHasFile(Post post) {
-		return post.getFiles() != null && !post.getFiles().isEmpty();
+		try {
+			return post.getFiles() != null && !post.getFiles().isEmpty();
+		} catch (Exception e) {
+			// LAZY 로딩 실패 시 파일 존재 여부를 별도 조회
+			return !fileRepository.findByPostId(post.getId()).isEmpty();
+		}
 	}
 
 	@Transactional

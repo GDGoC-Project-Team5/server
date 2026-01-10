@@ -2,6 +2,7 @@ package gdgoc.team5.gdg_server.post.controller.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import gdgoc.team5.gdg_server.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,9 +37,18 @@ public record PostResponseDto(
 	LocalDateTime createdAt,
 
 	@Schema(description = "게시글 수정일시", example = "2024-01-11T10:20:00")
-	LocalDateTime updatedAt
+	LocalDateTime updatedAt,
+
+	@Schema(description = "첨부 파일 URL 목록", example = "['/files/posts/uuid1.jpg', '/files/posts/uuid2.pdf']")
+	List<String> fileUrls
 ) {
 	public static PostResponseDto fromDomain(Post post, String realName) {
+		List<String> fileUrls = post.getFiles() != null
+			? post.getFiles().stream()
+				.map(file -> file.getFileUrl())
+				.toList()
+			: List.of();
+
 		return new PostResponseDto(
 			post.getId(),
 			post.getTitle(),
@@ -49,7 +59,8 @@ public record PostResponseDto(
 			post.getShowOnCalendar(),
 			post.getCalendarDate(),
 			post.getCreatedAt(),
-			post.getUpdatedAt()
+			post.getUpdatedAt(),
+			fileUrls
 		);
 	}
 }
