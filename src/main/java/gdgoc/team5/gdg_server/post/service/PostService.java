@@ -121,6 +121,21 @@ public class PostService {
 	public void deletePost(Long id) {
 		Post post = postRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 게시글을 찾을 수 없습니다: " + id));
+
+		// 게시글에 연결된 파일 조회
+		List<File> files = fileRepository.findByPostId(id);
+
+		// 각 파일을 파일 시스템에서 삭제 (실패해도 게시글 삭제는 진행)
+		for (File file : files) {
+			try {
+				localFileUploadComponent.delete(file.getFileUrl());
+				log.info("파일 삭제 성공: {} (게시글 ID: {})", file.getOriginalFileName(), id);
+			} catch (Exception e) {
+				log.warn("파일 삭제 실패 (계속 진행): {} (게시글 ID: {})", file.getOriginalFileName(), id, e);
+			}
+		}
+
+		// 게시글 삭제 (cascade로 인해 File 엔티티도 함께 삭제됨)
 		postRepository.delete(post);
 	}
 }
