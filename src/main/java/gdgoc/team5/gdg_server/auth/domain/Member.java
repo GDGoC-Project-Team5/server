@@ -41,6 +41,9 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private MemberType memberType;
 
+	@Column(unique = true)
+	private String socialId;          // 소셜 로그인 ID (Google sub 등)
+
 	@Column(nullable = false)
 	private Boolean isPending;        // 승인 여부
 
@@ -67,6 +70,19 @@ public class Member extends BaseEntity {
 			.email(dto.username() + "@test.com")
 			.isPending(Boolean.TRUE)
 			.isAdmin(dto.isAdmin())
+			.build();
+	}
+
+	// 소셜 로그인 회원가입
+	public static Member socialSignUp(String socialId, String email, String realName, MemberType memberType) {
+		return Member.builder()
+			.username(email.split("@")[0] + "_" + memberType.name().toLowerCase())
+			.email(email)
+			.realName(realName)
+			.memberType(memberType)
+			.socialId(socialId)
+			.isPending(Boolean.FALSE)
+			.isAdmin(Boolean.FALSE)
 			.build();
 	}
 }

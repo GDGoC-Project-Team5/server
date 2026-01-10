@@ -17,6 +17,11 @@ public class MemberRepositoryImpl implements MemberRepository {
 		return memberJpaRepository.findByUsername(username);
 	}
 
+	@Override
+	public Optional<Member> findBySocialId(String socialId) {
+		return memberJpaRepository.findBySocialId(socialId);
+	}
+
 	public Member save(Member member) {
 		return memberJpaRepository.save(member);
 	}
