@@ -65,7 +65,7 @@ public class Member extends BaseEntity {
 			.realName(dto.username())
 			.memberType(MemberType.TEST)
 			.email(dto.username() + "@test.com")
-			.isPending(dto.isPending())
+			.isPending(Boolean.TRUE)
 			.isAdmin(dto.isAdmin())
 			.build();
 	}
