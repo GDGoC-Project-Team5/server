@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gdgoc.team5.gdg_server.auth.controller.request.RefreshTokenRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.SignUpRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.SocialLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
@@ -111,6 +112,30 @@ public class AuthController {
 	) {
 		LoginResponseDto loginResponseDto = authService.socialLogin(dto, response);
 		return ResponseEntity.ok(loginResponseDto);
+	}
+
+	@Operation(
+		summary = "토큰 갱신",
+		description = "Refresh Token을 사용하여 새로운 Access Token과 Refresh Token을 발급받습니다. " +
+			"기존 Access Token이 만료되었을 때 사용하며, " +
+			"새로운 토큰들이 응답 헤더에 설정됩니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "토큰 갱신 성공. 새로운 JWT 토큰이 헤더에 설정됩니다."
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (Refresh Token 누락 또는 형식 오류)"),
+		@ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 Refresh Token")
+	})
+	@PostMapping("/refresh")
+	public ResponseEntity<Void> refresh(
+		@Parameter(description = "토큰 갱신 요청 정보", required = true)
+		@RequestBody @Valid RefreshTokenRequestDto dto,
+		HttpServletResponse response
+	) {
+		authService.refreshAccessToken(dto, response);
+		return ResponseEntity.ok().build();
 	}
 
 }

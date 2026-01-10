@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gdgoc.team5.gdg_server.auth.controller.request.RefreshTokenRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.SignUpRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.SocialLoginRequestDto;
 import gdgoc.team5.gdg_server.auth.controller.request.TestLoginRequestDto;
@@ -51,5 +52,29 @@ public class AuthService {
 
 	public LoginResponseDto socialLogin(SocialLoginRequestDto dto, HttpServletResponse response) {
 		return null;
+	}
+
+	public void refreshAccessToken(RefreshTokenRequestDto dto, HttpServletResponse response) {
+		String refreshToken = dto.refreshToken();
+
+		// refresh token 유효성 검증
+		if (!jwtTokenProvider.validateToken(refreshToken)) {
+			throw new IllegalArgumentException("유효하지 않은 refresh token입니다.");
+		}
+
+		// refresh token에서 member ID 추출
+		Long memberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
+
+		// member 조회
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+		// 새로운 access token 및 refresh token 생성
+		String newAccessToken = jwtTokenProvider.generateAccessToken(member);
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken(member);
+
+		// 응답 헤더에 새 토큰 설정
+		response.setHeader("Authorization", "Bearer " + newAccessToken);
+		response.setHeader("Refresh-Token", newRefreshToken);
 	}
 }
