@@ -5,9 +5,14 @@ spring:
     password: "tiger1234!"
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
@@ -18,7 +23,23 @@ spring:
       mode: always  # data-skill.sql 항상 실행
       data-locations: classpath:data-skill.sql
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_S3_BUCKET}
+
 jwt:
   secret: VGhpcyBpcyBhIHZlcnkgc2ChOoJlIHNlY3JldCBrZXkgZm9yIEpXVCAoMzJiYnl0ZXMpIQ==  # 예시 비밀 키 (Base64 인코딩된 문자열)
   accessExpiration: 3600000                 # 1시간 (3600000 밀리초)
   refreshExpiration: 604800000                     # 7일 (604800000 밀리초)
+
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:/home/ubuntu/uploads}
+    url-prefix: /files
+
