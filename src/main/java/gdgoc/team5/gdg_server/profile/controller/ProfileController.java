@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import gdgoc.team5.gdg_server.common.controller.argresolver.AuthenticatedToken;
 import gdgoc.team5.gdg_server.common.controller.argresolver.TokenInfo;
@@ -146,6 +148,30 @@ public class ProfileController {
 	) {
 		GithubAnalyzeResponseDto response = profileService.analyzeGithub(request.githubId());
 		return ResponseEntity.ok(response);
+	}
+
+	@Operation(
+		summary = "프로필 이미지 업로드",
+		description = "로그인한 사용자의 프로필 이미지를 업로드합니다. " +
+			"이미지 파일만 업로드 가능하며, 최대 크기는 2MB입니다. " +
+			"기존 프로필 이미지가 있다면 삭제되고 새 이미지로 교체됩니다."
+	)
+	@ApiResponses({
+		@ApiResponse(
+			responseCode = "200",
+			description = "프로필 이미지 업로드 성공. 업로드된 이미지의 URL을 반환합니다."
+		),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청 (파일 형식 오류 또는 크기 초과)"),
+		@ApiResponse(responseCode = "401", description = "인증 실패")
+	})
+	@PostMapping(value = "/image", consumes = "multipart/form-data")
+	public ResponseEntity<String> uploadProfileImage(
+		@Parameter(description = "업로드할 프로필 이미지 (최대 2MB)", required = true)
+		@RequestPart("image") MultipartFile image,
+		@AuthenticatedToken TokenInfo tokenInfo
+	) {
+		String imageUrl = profileService.updateProfileImage(tokenInfo.memberId(), image);
+		return ResponseEntity.ok(imageUrl);
 	}
 
 }
